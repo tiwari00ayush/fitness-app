@@ -3,33 +3,50 @@ import { Box, TextField, Stack, Button, Typography } from "@mui/material";
 import { fetchData, exerciseOptions } from "../utils/fetchData";
 import HorizontalBar from "./HorizontalBar";
 import { useExerciseContext } from "../context/ExerciseContext";
+import DummyLoading from "./DummyLoading";
 
 const SearchExercises = ({ exerciseRef }) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
   const [categories, setCategories] = useState([]);
   const { setExercise } = useExerciseContext();
   useEffect(() => {
+    setLoading(true);
     async function getCategory() {
-      const url = "https://exercisedb.p.rapidapi.com/exercises/bodyPartList";
-      const categoriesData = await fetchData(url, exerciseOptions);
-      setCategories(["all", ...categoriesData]);
+      try {
+        const url = "https://exercisedb.p.rapidapi.com/exercises/bodyPartList";
+        const categoriesData = await fetchData(url, exerciseOptions);
+        setCategories(["all", ...categoriesData]);
+
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        console.log(error);
+        setError(error);
+      }
     }
     getCategory();
   }, []);
   const handleSearch = async () => {
+    setExerciseLoading(true);
     if (search) {
-      const url = `https://exercisedb.p.rapidapi.com/exercises?limit=1300`;
-      const exerciseData = await fetchData(url, exerciseOptions);
-      const searchedExercises = exerciseData.filter(
-        (exercise) =>
-          exercise.name.toLowerCase().includes(search) ||
-          exercise.bodyPart.toLowerCase().includes(search) ||
-          exercise.equipment.toLowerCase().includes(search) ||
-          exercise.target.toLowerCase().includes(search)
-      );
-      console.log(searchedExercises);
-      setExercise(searchedExercises);
-      exerciseRef.current?.scrollIntoView({ behavior: "smooth" });
+      try {
+        const url = `https://exercisedb.p.rapidapi.com/exercises?limit=1300`;
+        const exerciseData = await fetchData(url, exerciseOptions);
+        const searchedExercises = exerciseData.filter(
+          (exercise) =>
+            exercise.name.toLowerCase().includes(search) ||
+            exercise.bodyPart.toLowerCase().includes(search) ||
+            exercise.equipment.toLowerCase().includes(search) ||
+            exercise.target.toLowerCase().includes(search)
+        );
+        console.log(searchedExercises);
+        setExercise(searchedExercises);
+        exerciseRef.current?.scrollIntoView({ behavior: "smooth" });
+      } catch (error) {
+        console.log(error);
+      }
       setSearch("");
     }
   };
@@ -39,14 +56,17 @@ const SearchExercises = ({ exerciseRef }) => {
         textAlign={"center"}
         fontWeight={"600"}
         fontSize={"2rem"}
-        mb={"20px"}
+        my={"20px"}
       >
         Awesome Exercises You <br /> Should Know
       </Typography>
       <Stack
         direction={"row"}
         justifyContent={"center"}
-        sx={{ width: { lg: "1200px", xs: "600px", position: "relative" } }}
+        sx={{
+          width: { lg: "1200px", xs: "100%" },
+          position: "relative",
+        }}
         paddingInline={"20px"}
       >
         <TextField
@@ -60,6 +80,7 @@ const SearchExercises = ({ exerciseRef }) => {
             borderRadius: "40px",
             backgroundColor: "white",
             width: { lg: "800px", xs: "70%" },
+            maxWidth: { xs: "600px" },
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter") handleSearch();
@@ -78,9 +99,13 @@ const SearchExercises = ({ exerciseRef }) => {
           search
         </Button>
       </Stack>
-      <Box sx={{ position: "relative", width: "100%", p: "10px", m: "10px" }}>
-        <HorizontalBar data={categories} exerciseRef={exerciseRef} />
-      </Box>
+      {loading ? (
+        <DummyLoading />
+      ) : (
+        <Box sx={{ position: "relative", width: "100%", p: "10px", m: "10px" }}>
+          <HorizontalBar data={categories} exerciseRef={exerciseRef} />
+        </Box>
+      )}
     </Stack>
   );
 };
