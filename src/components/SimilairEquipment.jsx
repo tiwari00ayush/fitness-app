@@ -21,8 +21,10 @@ const SimilairEquipment = ({ equipment }) => {
       <h1 className="text-4xl my-8">
         Similair <span className="text-red-400">Equpiment </span> exercise
       </h1>
+      <p className="text-[1rem] pb-2">Scroll →</p>
+
       <ScrollMenu>
-        {equipment === undefined ? (
+        {equipment === undefined || similairEx.length === 0 ? (
           <DummyLoading />
         ) : (
           similairEx.map((item) => (

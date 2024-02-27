@@ -99,6 +99,9 @@ const SearchExercises = ({ exerciseRef }) => {
           search
         </Button>
       </Stack>
+
+      <p className="text-[1rem] pb-2">Scroll →</p>
+
       {loading ? (
         <DummyLoading />
       ) : (

@@ -18,11 +18,12 @@ const VideoCard = ({ name }) => {
       <h1 className="text-4xl my-4">
         Watch <span className="text-red-400">{name}</span> exercise videos
       </h1>
+      <p className="text-[1rem] pb-2">Scroll →</p>
       <div className="flex items-stretch gap-10 justify-start">
-        {name === undefined ? (
+        {name === undefined || videos.length === 0 ? (
           <DummyLoading />
         ) : (
-          videos?.slice(0, 3).map((video, index) => (
+          videos.slice(0, 3).map((video, index) => (
             <div className="w-[300px]" key={index}>
               <a
                 href={`https://www.youtube.com/watch?v=${video.video.videoId}`}
